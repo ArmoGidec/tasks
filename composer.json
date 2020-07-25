@@ -1,0 +1,15 @@
+{
+    "require": {
+        "bramus/router": "^1.4",
+        "twig/twig": "^3.0",
+        "mongodb/mongodb": "^1.6",
+        "firebase/php-jwt": "^5.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Core\\": "app",
+            "App\\Controllers\\": "app/controllers",
+            "App\\Models\\": "app/models"
+        }
+    }
+}

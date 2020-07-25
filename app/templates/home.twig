@@ -1,0 +1,124 @@
+{% extends '_base.twig' %}
+
+{% block extra_styles %}
+<link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.17.1/dist/bootstrap-table.min.css">
+<style>
+    textarea {
+        resize: none;
+        ;
+    }
+</style>
+{% endblock %}
+
+{% block page_content %}
+
+<table data-classes="table table-bordered table-hover" data-toggle="table" data-pagination="true"
+    data-pagination-parts="['pageList']" data-page-size="3" data-pagination-loop="false">
+    <thead>
+        <tr>
+            <th data-field="user-email" data-sortable="true">User Email</th>
+            <th data-field="user-name" data-sortable="true">User Name</th>
+            <th>Task Text</th>
+            <th data-field="task-status" data-sortable="true">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for task in tasks %}
+        <tr>
+            <td> {{ task.user_email }} </td>
+            <td> {{ task.user_name }} </td>
+            <td>
+                <div class="d-flex align-items-center justify-content-between">
+                    <span class="mr">
+                        {{ task.text }}
+                    </span>
+                    {% if is_authenticated %}
+
+                    <div class="d-flex flex-column">
+                        {% if task.changed %}
+                        <span title="Is Changed"><i class="fa fa-pencil-square"></i></span>
+                        {% endif %}
+                        <a href="/task/{{ task.id }}/change" title="Change task text"><i
+                                class="fa fa-pencil-square-o"></i></a>
+                    </div>
+                    {% endif %}
+                </div>
+            </td>
+            <td class="text-center">
+                {% if task.done %}
+                <span class="badge badge-success">completed</span>
+                {% else %}
+                <span class="badge badge-secondary">not completed</span>
+                {% endif %}
+                {% if is_authenticated and not task.done %}
+                <a href="/task/{{ task.id }}/complete" title="Complete task"><i class="fa fa-thumb-tack"></i></a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if created %}
+<div class="alert alert-success alert-dismissible mt-3" id="created-popup" role="alert">
+    <strong>
+        Task is successfully created!
+    </strong>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+{% endif %}
+
+<form class="card mt-3" action="/" method="POST">
+    <div class="card-body">
+        <div class="row">
+            <div class="form-group col-12 col-md-6">
+                <label for="name-input">User Name</label>
+                <input id="name-input" type="text" name="user_name" class="form-control" required />
+                {% if errors.user_name %}
+                <small class="from-text text-danger"> {{ errors.user_name }} </small>
+                {% endif %}
+            </div>
+            <div class="form-group col-12 col-md-6">
+                <label for="email-input">User Email</label>
+                <input id="email-input" type="email" name="user_email" class="form-control" required />
+                {% if errors.user_email %}
+                <small class="from-text text-danger"> {{ errors.user_email }} </small>
+                {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-12">
+                <label for="text-input">Task Text</label>
+                <textarea name="task_text" id="text-input" rows="5" class="form-control" required></textarea>
+                {% if errors.task_text %}
+                <small class="from-text text-danger"> {{ errors.task_text }} </small>
+                {% endif %}
+            </div>
+        </div>
+        <div class="row text-right">
+            <div class="col-12 btn-wrapper">
+                <button class="btn btn-success" type="submit">Create</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://unpkg.com/bootstrap-table@1.17.1/dist/bootstrap-table.min.js"></script>
+{% if created %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const $popup = $('#created-popup');
+        $popup.alert();
+
+        setTimeout(() => {
+            $popup.alert('close');
+        }, 3000);
+    });
+</script>
+{% endif %}
+{% endblock %}

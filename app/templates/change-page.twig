@@ -1,0 +1,30 @@
+{% extends "_base.twig" %}
+
+{% block extra_styles %}
+<style>
+    textarea {
+        resize: none;;
+    }
+</style>
+{% endblock %}
+
+{% block page_content %}
+<div class="row">
+    <div class="col-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+        <div class="card">
+            <div class="card-body">
+                {% if errors.task_text %}
+                <div class="card-title"> {{ errors.task_text }} </div>
+                {% endif %}
+                <form action="/task/{{ task.id }}/change" method="POST">
+                    <label for="text-input">Task Text</label>
+                    <textarea class="form-control" name="task_text" id="text-input" rows="10">{{ task.text }}</textarea>
+                    <div class="btn-wrapper text-right mt-3">
+                        <button class="btn btn-primary" type="submit">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

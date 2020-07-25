@@ -1,0 +1,32 @@
+{% extends "_base.twig" %}
+
+{% block page_content %}
+<div class="row">
+    <div class="col-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+        <div class="card">
+            <div class="card-body">
+                {% if errors.common %}
+                <h5 class="card-title text-danger"> {{ errors.common }} </h5>
+                {% endif %}
+                <form action="/login" method="POST">
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="login" placeholder="Login">
+                        {% if errors.login %}
+                        <small class="form-text text-danger"> {{ errors.login }} </small>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control" name="password" placeholder="Password">
+                        {% if errors.password %}
+                        <small class="form-text text-danger"> {{ errors.password }} </small>
+                        {% endif %}
+                    </div>
+                    <div class="btn-wrapper text-right">
+                        <button type="submit" class="btn btn-primary">Sign In</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
