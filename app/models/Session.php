@@ -12,6 +12,7 @@ class Session extends Model
 {
     public $token = '';
     public $user_id = '';
+    private $ip = null;
 
     /**
      * @param object|array $payload
@@ -19,11 +20,11 @@ class Session extends Model
      */
     static function createSession($payload)
     {
-        $payload = array_merge(['ip' => self::getIp()], $payload);
-
         $session = new self();
-        $session->token = JWT::encode($payload, key);
-        $session->id = self::saveSession($session->token);
+
+        $session->user_id = $payload['user_id'];
+        $session->ip = self::getIp();
+        $session->id = $session->save();
 
         return $session->id !== null ? $session : null;
     }
@@ -32,13 +33,13 @@ class Session extends Model
      * @param string $token
      * @return mixed
      */
-    private static function saveSession($token)
+    private function save()
     {
-        /**
-         * @var \MongoDB\Collection
-         */
-        $collection = self::getDb()->session;
-        $insertResult = $collection->insertOne(['token' => $token, 'disabled' => false]);
+        $insertResult = self::getDb()->session->insertOne([
+            'ip' => $this->ip,
+            'user_id' => $this->user_id,
+            'disabled' => false
+        ]);
         return $insertResult->getInsertedId();
     }
 
@@ -60,15 +61,16 @@ class Session extends Model
     /**
      * @param string $session
      */
-    static function getSession($session_token)
+    static function getSession($session_id)
     {
         $session = new self();
 
         $session_object = self::getDb()->session->findOne(
-            ['_id' => new ObjectId($session_token), 'disabled' => false]);
+            ['_id' => new ObjectId($session_id), 'disabled' => false]);
         if ($session_object !== null) {
-            $session->token = $session_object->token;
-            $session->id = $session_object->_id;
+            $session->id = $session_id;
+            $session->ip = $session_object->ip;
+            $session->user_id = $session_object->user_id;
         }
 
         return $session->id ? $session : null;
@@ -76,12 +78,8 @@ class Session extends Model
 
     function validate()
     {
-        $payload = JWT::decode($this->token, key, ['HS256']);
-
-        if ($payload->ip !== self::getIp()) {
+        if ($this->ip !== self::getIp()) {
             $this->errors['session'] = 'Invalid session';
-        } else {
-            $this->user_id = json_decode(json_encode($payload), true)['user_id']['$oid'];
         }
 
         return $this->is_valid();
