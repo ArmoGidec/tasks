@@ -35,5 +35,6 @@ class Model
 
     function validate()
     {
+        return $this->is_valid();
     }
 }
