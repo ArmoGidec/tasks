@@ -72,22 +72,23 @@ class User extends Model
 
     static function check_auth($session_token)
     {
+        $user = null;
         $session = Session::getSession($session_token);
 
         if ($session !== null && $session->validate()) {
             $user_id = $session->user_id;
-            $user = self::getDb()->users->findOne(['_id' => new ObjectId($user_id)]);
+            $user_object = self::getDb()->users->findOne(['_id' => new ObjectId($user_id)]);
 
-            $user = new User([
-                'login' => $user->login,
-                'password' => $user->password
-            ]);
-
-            $user->session = $session;
-
-            return $user;
+            if ($user_object !== null) {
+                $user = new User([
+                    'login' => $user_object->login,
+                    'password' => $user_object->password
+                ]);
+    
+                $user->session = $session;
+            }
         }
 
-        return null;
+        return $user;
     }
 }
