@@ -32,16 +32,16 @@
                     <span class="mr">
                         {{ task.text }}
                     </span>
-                    {% if is_authenticated %}
-
+                    
                     <div class="d-flex flex-column">
                         {% if task.changed %}
                         <span title="Is Changed"><i class="fa fa-pencil-square"></i></span>
                         {% endif %}
+                        {% if is_authenticated %}
                         <a href="/task/{{ task.id }}/change" title="Change task text"><i
                                 class="fa fa-pencil-square-o"></i></a>
+                        {% endif %}
                     </div>
-                    {% endif %}
                 </div>
             </td>
             <td class="text-center">
