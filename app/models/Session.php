@@ -4,9 +4,6 @@ namespace App\Models;
 
 use Core\Model;
 use \MongoDB\BSON\ObjectId;
-use Firebase\JWT\JWT;
-
-define('key', 'QwerTy0987');
 
 class Session extends Model
 {
